@@ -1,0 +1,4 @@
+,val_roc_auc,val_pr_auc,val_accuracy,val_precision,val_recall,val_f1,test_roc_auc,test_pr_auc,test_accuracy,test_precision,test_recall,test_f1,overfit_gap
+Logistic Regression,0.8367,0.64,0.7524,0.5232,0.7643,0.6212,0.8538,0.6736,0.7417,0.5081,0.7821,0.616,-0.0171
+XGBoost,0.8356,0.6401,0.7524,0.5224,0.7929,0.6298,0.8555,0.67,0.755,0.5235,0.8357,0.6437,-0.0199
+LightGBM,0.8339,0.6337,0.7476,0.5164,0.7857,0.6232,0.8548,0.6671,0.754,0.5222,0.8393,0.6438,-0.0209
