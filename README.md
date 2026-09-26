@@ -287,3 +287,64 @@ These insights can support targeted customer-retention strategies.
 ## 📄 License
 
 Please refer to the repository's `LICENSE` file for the applicable license and usage conditions.
+
+## In short
+
+An end-to-end machine learning project that predicts telecom customer churn — and, just as importantly, decides *who to call*. The analysis is one notebook, the model ships as a published container image, and every release is gated on the model still clearing its performance floor.
+
+![Dashboard usage](docs/churn_ui.gif)
+
+*Live dashboard: enter a customer profile → churn probability gauge + per-prediction SHAP explanation.*
+
+![Model metrics](docs/model_metrics.png)
+### Methodology Notes
+
+- **Model selection** uses the validation set (15%); the test set (15%) is reserved
+  strictly for the final unbiased performance estimate.
+- **Feature engineering lives inside the sklearn Pipeline** (`FeatureEngineer` step in `pipeline_lib.py`),
+  so statistics such as the MonthlyCharges median used by `high_value_short_tenure`
+  are learned from training folds only. The saved `models/final_pipeline.joblib`
+  accepts raw customer records — no manual feature engineering is needed at serving time.
+- **The decision threshold** is tuned on the validation set (maximizing F1) and stored
+  in `models/model_metadata.json`; the API applies it automatically instead of a
+  hardcoded 0.5.
+- **Mutual information** is used to sanity-check feature signal before modeling
+  (`figures/feature_selection_mi.png`); models still train on the full feature set.
+
+## 📊 Power BI Dashboard — Customer Retention Command Center
+
+A four-page interactive Power BI dashboard (plus a full dark-mode twin of every
+page) built on the model's scored output:
+
+![Power BI dashboard usage](docs/dashboard.gif)
+
+*Live usage: KPI cards and every visual cross-filter from the Contract slicer,
+four story pages (Executive Overview → Risk Segmentation → Retention Targeting →
+Model Insights), and a **dark-mode toggle button** that switches the entire
+report between light and dark themes (palette: `#003049 / #D62828 / #F77F00 /
+#FCBF49`).*
+
+- **Executive Overview** — how big is the churn problem, and what revenue is exposed?
+- **Risk Segmentation** — where does churn concentrate? Slice any dimension.
+- **Retention Targeting** — a ranked retention call list with savable revenue.
+- **Model Insights** — champion model card, SHAP drivers, and a reliability plot
+  (observed churn rate per predicted-probability bucket).
+
+> **Read before quoting these pages.** All 7,043 customers are scored by a
+> pipeline trained on 4,932 of them, so ~70% of every dashboard figure is
+> in-sample and optimistic; the model card also shows 0.5-threshold metrics while
+> the API serves 0.669. See [`RESULTS.md`](RESULTS.md) §6.
+
+Open `dashboard/ChurnRetention/ChurnRetention.pbip` with Power BI Desktop
+(PBIP/PBIR project format — enable *Power BI Project files* in Preview
+features). Page navigation buttons require **Ctrl+Click** inside Desktop.
+
+## 🖼️ Output Gallery
+
+| | |
+|---|---|
+| ![Churn drivers](figures/shap_bar.png) | ![SHAP beeswarm](figures/shap_summary.png) |
+| ![ROC curves](figures/roc_curves_comparison.png) | ![PR curves](figures/pr_curves_comparison.png) |
+| ![Model comparison](figures/model_comparison_bar.png) | ![Churn by contract](figures/eda_churn_by_contract.png) |
+| ![Feature selection MI](figures/feature_selection_mi.png) | ![Confusion matrix](figures/confusion_matrix_logistic_regression_test.png) |
+
